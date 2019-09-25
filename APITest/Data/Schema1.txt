@@ -1,0 +1,48 @@
+﻿{
+  "data": [
+    {
+      "rh": 64,
+      "pod": "n",
+      "lon": -73.94,
+      "pres": 1007.9,
+      "timezone": "America/New_York",
+      "ob_time": "2019-09-26 08:25",
+      "country_code": "US",
+      "clouds": 45,
+      "ts": 1569486300,
+      "solar_rad": 0,
+      "state_code": "NY",
+      "city_name": "Long Island City",
+      "wind_spd": 0.89,
+      "last_ob_time": "2019-09-26T08:25:00",
+      "wind_cdir_full": "west-southwest",
+      "wind_cdir": "WSW",
+      "slp": 1010.3,
+      "vis": 5,
+      "h_angle": -90,
+      "sunset": "22:46",
+      "dni": 0,
+      "dewpt": 12.5,
+      "snow": 0,
+      "uv": 0,
+      "precip": 0,
+      "wind_dir": 246,
+      "sunrise": "10:46",
+      "ghi": 0,
+      "dhi": 0,
+      "aqi": 62,
+      "lat": 40.73,
+      "weather": {
+        "icon": "c01n",
+        "code": "800",
+        "description": "Clear sky"
+      },
+      "datetime": "2019-09-26:08",
+      "temp": 19.4,
+      "station": "D9152",
+      "elev_angle": -31.41,
+      "app_temp": 19.2
+    }
+  ],
+  "count": 1
+}
