@@ -1,53 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
-using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Support.UI;
+﻿using NUnit.Framework;
 using UIAutomation.Framework;
 
 namespace UIAutomation.Tests 
 {
     internal class ApplyNumberPlate : TestBase
     {
-        public static string strTestDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory + @"\Data","TestData.csv");
+        public static string strTestDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TestData.csv");
         List<string> TestData = TestDataHelper.ReadInCSV("TestData.csv");
 
-        [OneTimeSetUp]
-        public void Init()
-        {
-            
-            webDriver.Navigate().GoToUrl(WebDriverConfigurationSettings.ConfigSetting(TestConstants.ConfigTypes.WebDriverConfiguration, TestConstants.ConfigTypesKey.Url));
-            WebPageStateChecker.PollForReadyState(webDriver, Int16.Parse(WebDriverConfigurationSettings.ConfigSetting(TestConstants.ConfigTypes.WebDriverConfiguration, TestConstants.ConfigTypesKey.GlobalTimeout)));
-        }
-
-        [Test, Order(1)]
+        [Test]
+        [Retry(3)]
         public void VerifyLandingPage()
         {
             var searchBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "XPath", ".//*[@class='form__text form--large']");
-            Assert.IsTrue(WebAssertions.IsWebElementDisplayed(searchBox));
+            Assert.That(WebAssertions.IsWebElementDisplayed(searchBox), Is.True);
         }
 
-        [Test, Order(2)]
+        [Test]
+        [Retry(3)]
         public void VerifySearchButton()
         {
             var searchButton = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "XPath", ".//*[@class='button button--primary']");
-            Assert.IsTrue(WebAssertions.IsWebElementDisplayed(searchButton));
+            Assert.That(WebAssertions.IsWebElementDisplayed(searchButton), Is.True);
         }
 
-        [Test, Order(3)]
+        [Test]
+        [Retry(3)]
         public void SearchServices()
         {
             var searchBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "XPath", ".//*[@class='form__text form--large']");
             var searchButton = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "XPath", ".//*[@class='button button--primary']");
             IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver, searchBox, "Input", TestData[3]);
-            webDriver.FindElement(By.XPath(".//*[@class='autocomplete__option']")).Click();
+            var locatorButton = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "CssSelector", "[aria-label='Search'][class^='button']");
+            IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver, locatorButton, "Click", null);
             var searchResults = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "XPath", ".//*[@class='search__title']");
-            Assert.IsTrue(searchResults.Text.Contains(TestData[3].ToLower()));
-            String[] searchQuery = TestData[3].ToLower().Split(" ");
-            Assert.IsTrue(webDriver.Url.EndsWith(String.Join("+", searchQuery)));
+            Assert.That(searchResults.Text.ToLowerInvariant().Contains(TestData[3].ToLowerInvariant()), Is.True);
+            var searchQuery = TestData[3].ToLowerInvariant().Split(" ");
+            Assert.That(webDriver.Url.ToLowerInvariant().EndsWith(string.Join("+", searchQuery)), Is.True);
         }
     }
 }

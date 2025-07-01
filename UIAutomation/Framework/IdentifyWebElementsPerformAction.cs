@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 
 namespace UIAutomation.Framework
 {
@@ -12,15 +12,15 @@ namespace UIAutomation.Framework
     {
         public static IWebElement InitialiseDynamicWebElement(IWebDriver driver, string strIdentifierType, string strIdentifier)
         {
-            var dWait = new WebDriverWait(driver,TimeSpan.FromSeconds(Int16.Parse(WebDriverConfigurationSettings.ConfigSetting(TestConstants.ConfigTypes.WebDriverConfiguration,TestConstants.ConfigTypesKey.ObjectIdentificationTimeOut))));
+            var dWait = new WebDriverWait(driver,TimeSpan.FromSeconds(int.Parse(WebDriverConfigurationSettings.ConfigSetting(TestConstants.ConfigTypes.WebDriverConfiguration,TestConstants.ConfigTypesKey.ObjectIdentificationTimeOut))));
             try
             {
                 IWebElement dynamicElement;
                 switch(strIdentifierType.ToLower())
                 {
                     case "id":
-                        dynamicElement = dWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.Id(strIdentifier)));
-                        List<IWebElement> webElements = new List<IWebElement>(driver.FindElements(By.Id(strIdentifier)));
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.Id(strIdentifier)));
+                        var webElements = new List<IWebElement>(driver.FindElements(By.Id(strIdentifier)));
                         if (webElements.Count > 1)
                         {
                             foreach (var webE in webElements)
@@ -33,22 +33,25 @@ namespace UIAutomation.Framework
                         }
                         return dynamicElement;
                     case "class":
-                        dynamicElement = dWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.ClassName(strIdentifier)));
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.ClassName(strIdentifier)));
                         return dynamicElement;
                     case "name":
-                        dynamicElement = dWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.Name(strIdentifier)));
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.Name(strIdentifier)));
                         return dynamicElement;
                     case "xpath":
-                        dynamicElement = dWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.XPath(strIdentifier)));
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.XPath(strIdentifier)));
+                        return dynamicElement;
+                    case "cssselector":
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.CssSelector(strIdentifier)));
                         return dynamicElement;
                     case "linktext":
-                        dynamicElement = dWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.LinkText(strIdentifier)));
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.LinkText(strIdentifier)));
                         return dynamicElement;
                     case "partiallinktext":
-                        dynamicElement = dWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.PartialLinkText(strIdentifier)));
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.PartialLinkText(strIdentifier)));
                         return dynamicElement;
                     case "tagname":
-                        dynamicElement = dWait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementExists(By.TagName(strIdentifier)));
+                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.TagName(strIdentifier)));
                         return dynamicElement;
                     default:
                         return null;

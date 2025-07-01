@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace UIAutomation.Framework
+namespace APIAutomation
 {
-    public static class WebDriverConfigurationSettings
+    internal class ConfigHelper
     {
         public static string ConfigSetting(string configType, string keyValue)
         {

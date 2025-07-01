@@ -1,7 +1,5 @@
 ﻿using OpenQA.Selenium;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 
 namespace UIAutomation.Framework
@@ -10,7 +8,7 @@ namespace UIAutomation.Framework
     {
         public static void PollForReadyState(IWebDriver driver, int intTimeout)
         {
-            DateTime timeOnFunctionCall = DateTime.Now;
+            var timeOnFunctionCall = DateTime.Now;
             string strState;
             while((DateTime.Now - timeOnFunctionCall).TotalSeconds < intTimeout)
             {
