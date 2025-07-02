@@ -1,73 +1,68 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Support;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading;
 using UIAutomation.Framework;
 
 namespace UIAutomation.Tests
 {
     internal class LocateUs : TestBase
     {
-        public static string strTestDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory + @"\Data", "TestData.csv");
+        public static string strTestDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TestData.csv");
         List<string> TestData = TestDataHelper.ReadInCSV("TestData.csv");
 
-        [OneTimeSetUp]
-        public void Init()
-        {
 
-            webDriver.Navigate().GoToUrl(WebDriverConfigurationSettings.ConfigSetting(TestConstants.ConfigTypes.WebDriverConfiguration, TestConstants.ConfigTypesKey.Url));
-            WebPageStateChecker.PollForReadyState(webDriver, Int16.Parse(WebDriverConfigurationSettings.ConfigSetting(TestConstants.ConfigTypes.WebDriverConfiguration, TestConstants.ConfigTypesKey.GlobalTimeout)));
-        }
-
-        [Test, Order(1)]
+        [Test]
+        [Retry(3)]
         public void VerifyLandingPage()
         {
             var searchBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "XPath", ".//*[@class='form__text form--large']");
-            Assert.IsTrue(WebAssertions.IsWebElementDisplayed(searchBox));
+            Assert.That(WebAssertions.IsWebElementDisplayed(searchBox), Is.True);
         }
 
-        [Test, Order(2)]
+        [Test]
+        [Retry(3)]
         public void VerifyLocateUsMenu()
         {
             var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find locations");
-            Assert.IsTrue(WebAssertions.IsWebElementDisplayed(locateUsMenu));
+            Assert.That(WebAssertions.IsWebElementDisplayed(locateUsMenu), Is.True);
         }
 
-        [Test, Order(2)]
+        [Test]
+        [Retry(3)]
         public void ClickOnLocateUsMenu()
         {
             var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find locations");
-            IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver,locateUsMenu,"Click", "");
-            Assert.IsTrue(webDriver.Url.EndsWith("service-centre"));
+            IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver,locateUsMenu,"Click", null);
+            Assert.That(webDriver.Url.EndsWith("service-centre"), Is.True);
         }
 
-        [Test, Order(4)]
+        [Test]
+        [Retry(3)]
         public void VerifyLocatorSearchTextBox()
         {
-            var locatorTextBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "Id", "locatorTextSearch");
-            Assert.IsTrue(WebAssertions.IsWebElementDisplayed(locatorTextBox));
+            var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find locations");
+            IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver, locateUsMenu, "Click", null);
+            var locatorTextBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "CssSelector", "[name='search-bar']");
+            Assert.That(WebAssertions.IsWebElementDisplayed(locatorTextBox), Is.True);
         }
 
-        [Test, Order(5)]
+        [Test]
+        [Retry(3)]
         public void VerifyLocatorSearchButton()
         {
-            var locatorButton = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "Xpath", ".//*[@type='submit']");
-            Assert.IsTrue(WebAssertions.IsWebElementDisplayed(locatorButton));
+            var locatorButton = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "CssSelector", "[aria-label='Search']");
+            Assert.That(WebAssertions.IsWebElementDisplayed(locatorButton), Is.True);
         }
 
-        [Test, Order(6)]
+        [Test]
+        [Retry(3)]
         public void SearchServiceLocations()
         {
-            var locatorTextBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "Id", "locatorTextSearch");
+            var locatorTextBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "CssSelector", "[aria-label='Search']");
             var locatorButton = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "Xpath", ".//*[@type='submit']");
             IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver,locatorTextBox,"Input", TestData[4]);
             locatorTextBox.SendKeys(Keys.Enter);
             Thread.Sleep(2000);
-            Assert.IsTrue(webDriver.FindElement(By.PartialLinkText(TestData[5])).Displayed);
+            Assert.That(webDriver.FindElement(By.PartialLinkText(TestData[5])).Displayed, Is.True);
         }
 
     }
