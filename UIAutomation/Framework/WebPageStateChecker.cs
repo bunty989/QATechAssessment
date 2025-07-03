@@ -1,6 +1,6 @@
 ﻿using OpenQA.Selenium;
-using System;
-using System.Threading;
+using Serilog;
+
 
 namespace UIAutomation.Framework
 {
@@ -17,7 +17,10 @@ namespace UIAutomation.Framework
                 {
                     strState = (string)js.ExecuteScript("return document.readystate");
                     if (strState == "complete")
+                    { 
+                        Log.Debug("Page is ready with state: {0}", strState);
                         break;
+                    }
                     Thread.Sleep(TimeSpan.FromSeconds(1));
                 }
                 catch (Exception)

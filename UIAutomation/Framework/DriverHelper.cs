@@ -1,15 +1,18 @@
 ﻿using OpenQA.Selenium;
-using System;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.IE;
 using OpenQA.Selenium.Firefox;
 using OpenQA.Selenium.Edge;
+using Serilog;
 
 namespace UIAutomation.Framework
 {
     internal class DriverHelper
     {
-        public IWebDriver InitialiseDriver(IWebDriver driver)
+        [ThreadStatic]
+        private static IWebDriver driver;
+
+        public static IWebDriver InitialiseDriver()
         {
             switch(WebDriverConfigurationSettings.ConfigSetting(TestConstants.ConfigTypes.WebDriverConfiguration,TestConstants.ConfigTypesKey.Browser).ToLower())
             {
@@ -22,18 +25,20 @@ namespace UIAutomation.Framework
                     break;
 
                 case "ie":
-                    var ieOptions = new InternetExplorerOptions();
-                    ieOptions.IntroduceInstabilityByIgnoringProtectedModeSettings = true;
-                    ieOptions.RequireWindowFocus = true;
-                    ieOptions.EnsureCleanSession = true;
-                    ieOptions.IgnoreZoomLevel = true;
-                    ieOptions.AcceptInsecureCertificates = true;
+                    var ieOptions = new InternetExplorerOptions
+                    {
+                        IntroduceInstabilityByIgnoringProtectedModeSettings = true,
+                        RequireWindowFocus = true,
+                        EnsureCleanSession = true,
+                        IgnoreZoomLevel = true,
+                        AcceptInsecureCertificates = true
+                    };
                     driver = new InternetExplorerDriver(ieOptions);
                     break;
 
                 case "headless":
                     chromeOpt = new ChromeOptions();
-                    chromeOpt.AddArguments("start-maximized", "--disable-gpu", "--no-sandbox", "window-size=1280,800", "--headless=new");
+                    chromeOpt.AddArguments("start-maximized", "--disable-gpu", "no-sandbox", "window-size=1280,800", "--headless=new");
                     chromeOpt.PageLoadStrategy = PageLoadStrategy.Normal;
                     driver = new ChromeDriver(chromeOpt);
                     break;
@@ -67,6 +72,7 @@ namespace UIAutomation.Framework
                     driver = new ChromeDriver(chromeOpt);
                     break;
             }
+            Log.Information("Started {0} WebDriver successfully", driver.GetType().Name);
             driver.Manage().Window.Maximize();
             driver.Manage().Window.Size = new System.Drawing.Size(1280, 800);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(int.Parse(WebDriverConfigurationSettings.ConfigSetting

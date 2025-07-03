@@ -5,6 +5,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using Serilog;
 
 namespace UIAutomation.Framework
 {
@@ -31,35 +32,41 @@ namespace UIAutomation.Framework
                                 }
                             }
                         }
-                        return dynamicElement;
+                        break;
                     case "class":
                         dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.ClassName(strIdentifier)));
-                        return dynamicElement;
+                        break;
                     case "name":
                         dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.Name(strIdentifier)));
-                        return dynamicElement;
+                        break;
                     case "xpath":
                         dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.XPath(strIdentifier)));
-                        return dynamicElement;
+                        break;
                     case "cssselector":
                         dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.CssSelector(strIdentifier)));
-                        return dynamicElement;
+                        break;
                     case "linktext":
                         dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.LinkText(strIdentifier)));
-                        return dynamicElement;
+                        break;
                     case "partiallinktext":
                         dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.PartialLinkText(strIdentifier)));
-                        return dynamicElement;
+                        break;
                     case "tagname":
                         dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.TagName(strIdentifier)));
-                        return dynamicElement;
+                        break;
                     default:
                         return null;
                 }
+                var webElementName = dynamicElement?.GetAttribute("name");
+                var webElementValue = dynamicElement?.GetAttribute("value");
+                var elementDisplayedText = string.IsNullOrEmpty(webElementValue) ? webElementName : webElementValue;
+                Log.Debug("WebElement {0} is identified successfully", elementDisplayedText);
+                return dynamicElement;
             }
             catch(Exception e)
             {
-                string strTemp = strIdentifier + " - failed \\n";
+                var strTemp = strIdentifier + " - failed \\n";
+                Log.Error(strTemp + Environment.NewLine + e.Message);
                 Assert.Fail(strTemp + e);
                 return null;
             }
@@ -68,7 +75,7 @@ namespace UIAutomation.Framework
         public static void PerformWebdriverAction(IWebDriver driver, IWebElement objWebElement, string strAction, string strData)
         {
             bool boolExecStep = false;
-            string strExecption = "";
+            string strException = "";
             try
             {
                 switch(strAction.ToLower())
@@ -78,6 +85,7 @@ namespace UIAutomation.Framework
                         objWebElement.Clear();
                         objWebElement.SendKeys(strData);
                         boolExecStep = true;
+                        Log.Debug("Input action performed on element: with data: {0}", strData);
                         break;
 
                     case "select":
@@ -85,17 +93,20 @@ namespace UIAutomation.Framework
                         SelectElement selector = new SelectElement(objWebElement);
                         selector.SelectByText(strData);
                         boolExecStep = true;
+                        Log.Debug("Select action performed on element: with data: {0}", strData);
                         break;
 
                     case "click":
                         objWebElement.Click();
                         boolExecStep = true;
+                        Log.Debug("Click action performed on element: ");
                         break;
 
                     case "focus":
                         Actions actFocus = new Actions(driver);
                         actFocus.MoveToElement(objWebElement);
                         boolExecStep = true;
+                        Log.Debug("Focus action performed on element: ");
                         break;
 
                     default:
@@ -105,10 +116,14 @@ namespace UIAutomation.Framework
             }
             catch(Exception e)
             {
-                strExecption = e.ToString();
+                strException = e.ToString();
                 boolExecStep = false;
+                Log.Error("Unable to perform Action on WebElement {0} due to {1}",
+                                objWebElement.GetAttribute("name"),
+                                strException);
                 driver.Close();
                 driver.Dispose();
+                Assert.Fail($"Unable to perform Action on WebElement {objWebElement.GetAttribute("name")} due to {strException}");
             }
         }
     }
