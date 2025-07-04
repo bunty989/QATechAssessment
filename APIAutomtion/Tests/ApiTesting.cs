@@ -3,6 +3,9 @@ using APIAutomation.Library;
 using Newtonsoft.Json.Schema;
 using NUnit.Framework;
 using RestSharp;
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
 
 namespace APIAutomation.Tests
 {
@@ -12,6 +15,27 @@ namespace APIAutomation.Tests
         public static string strTestDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "TestData.csv");
         List<string> TestData = TestDataHelper.ReadInCSV("TestData.csv");
 
+        [OneTimeSetUp]
+        public void OneTimeSetUpFixture()
+        {
+            var formattedDateTime = DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss");
+            var reportFilePath = Path.Combine(Directory.GetParent(@"../../../../")?.FullName, "Logs", formattedDateTime);
+            try
+            {
+                Directory.CreateDirectory(reportFilePath);
+            }
+            catch (Exception ex)
+            {
+                Log.Error("Couldn't create the directory in the file path {0} due to {1}",
+                    reportFilePath, ex.Message);
+            }
+            var levelSwitch = new LoggingLevelSwitch(LogEventLevel.Verbose);
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.ControlledBy(levelSwitch)
+                .WriteTo.File(reportFilePath + @"\Log",
+                    outputTemplate: "{Timestamp: yyyy-MM-dd HH:mm:ss.fff} | {Level:u3} | {Message} | {NewLine}",
+                    rollingInterval: RollingInterval.Day).CreateLogger();
+        }
 
         [Test]
         [Retry(3)]
@@ -24,6 +48,7 @@ namespace APIAutomation.Tests
             settings.Request.AddQueryParameter(TestData[6], TestData[10]);
             settings.Response = settings.RestClient.Execute(settings.Request);
             var reSponse = settings.Response.json();
+            Log.Debug("Response: {0}", reSponse.ToString());
             Assert.That(reSponse.IsValid(Schema("GetCurrentStatus")), Is.True);
             Assert.That(reSponse.SelectToken("data[0].state_code").ToString().Equals("NY"), Is.True);
         }
@@ -38,25 +63,31 @@ namespace APIAutomation.Tests
             settings.Request.AddQueryParameter(TestData[6], TestData[10]);
             settings.Response = settings.RestClient.Execute(settings.Request);
             var reSponse = settings.Response.json();
+            Log.Debug("Response: {0}", reSponse.ToString());
             Assert.That(reSponse.IsValid(Schema("2")), Is.True);
             var recordCount = reSponse.SelectToken("data").Count();
-            string[] Date = new string[recordCount];
-            for(int i = 0; i < recordCount; i++)
+            var Date = new string[recordCount];
+            for(var i = 0; i < recordCount; i++)
             {
                 Date[i] = DateTime.Parse(reSponse.SelectToken("data[" + i + "].ob_time").ToString()).ToUniversalTime().ToString();
-                Console.WriteLine(Date[i]);
+                Log.Debug("Date: {0}", Date[i]);
             }
         }
         
 
         public static JSchema? Schema(string response)
         {
-            //JSchema jsonSchema;
             var jsonSchemaString = response.Equals("GetCurrentStatus") ?
                 File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Schema1.txt"))
                 : File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Schema2.txt"));
             var jsonSchema = JSchema.Parse(jsonSchemaString);
             return jsonSchema;
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDownFixture()
+        {
+            Log.CloseAndFlush();
         }
     }
 }

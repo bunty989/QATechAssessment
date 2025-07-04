@@ -46,3 +46,13 @@ jobs:
 
       - name: Test
         run: dotnet test --no-build --verbosity normal
+      
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: artifact_${{ matrix.os }}_${{ matrix.browser }}
+          path: |
+            ${{ github.workspace }}/Logs/
+          if-no-files-found: warn
+          compression-level: 9
