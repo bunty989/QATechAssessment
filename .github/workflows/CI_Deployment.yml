@@ -8,6 +8,8 @@ on:
 
 jobs:
   test:
+    permissions:
+      contents: read
     name: ${{ matrix.browser }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
