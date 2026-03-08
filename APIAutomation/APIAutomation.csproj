@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
-    <PackageReference Include="NUnit" Version="4.5.0" />
+    <PackageReference Include="NUnit" Version="4.5.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="6.1.0" />
     <PackageReference Include="RestSharp" Version="114.0.0" />
     <PackageReference Include="RestSharp.Serializers.NewtonsoftJson" Version="114.0.0" />
