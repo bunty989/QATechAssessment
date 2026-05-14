@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
-using SeleniumExtras.WaitHelpers;
 using Serilog;
 
 namespace UIAutomation.Framework
@@ -20,7 +17,7 @@ namespace UIAutomation.Framework
                 switch(strIdentifierType.ToLower())
                 {
                     case "id":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.Id(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.Id(strIdentifier)));
                         var webElements = new List<IWebElement>(driver.FindElements(By.Id(strIdentifier)));
                         if (webElements.Count > 1)
                         {
@@ -34,25 +31,25 @@ namespace UIAutomation.Framework
                         }
                         break;
                     case "class":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.ClassName(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.ClassName(strIdentifier)));
                         break;
                     case "name":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.Name(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.Name(strIdentifier)));
                         break;
                     case "xpath":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.XPath(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.XPath(strIdentifier)));
                         break;
                     case "cssselector":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.CssSelector(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.CssSelector(strIdentifier)));
                         break;
                     case "linktext":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.LinkText(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.LinkText(strIdentifier)));
                         break;
                     case "partiallinktext":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.PartialLinkText(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.PartialLinkText(strIdentifier)));
                         break;
                     case "tagname":
-                        dynamicElement = dWait.Until(ExpectedConditions.ElementExists(By.TagName(strIdentifier)));
+                        dynamicElement = dWait.Until(driver => ElementToBeClickable(driver, By.TagName(strIdentifier)));
                         break;
                     default:
                         return null;
@@ -125,6 +122,12 @@ namespace UIAutomation.Framework
                 driver.Dispose();
                 Assert.Fail($"Unable to perform Action on WebElement {objWebElement.GetAttribute("name")} due to {strException}");
             }
+        }
+
+        private static IWebElement ElementToBeClickable(IWebDriver driver, By locator)
+        {
+            var element = driver.FindElement(locator);
+            return element.Displayed && element.Enabled ? element : null;
         }
     }
 }
