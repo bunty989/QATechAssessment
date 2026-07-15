@@ -14,7 +14,7 @@ namespace UIAutomation.Tests
         [Retry(3)]
         public void VerifyLandingPage()
         {
-            var searchBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "XPath", ".//*[@class='form__text form--large']");
+            var searchBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "CssSelector", "[id^='search-bar'] input");
             _test.Log(Status.Info, "Verifying the landing page");
             Assert.That(WebAssertions.IsWebElementDisplayed(searchBox), Is.True);
             _test.Pass("<div style='color:green; font-weight :bold'> Landing page is displayed successfully </div>",
@@ -25,7 +25,7 @@ namespace UIAutomation.Tests
         [Retry(3)]
         public void VerifyLocateUsMenu()
         {
-            var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find locations");
+            var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find us");
             _test.Log(Status.Info, "Verifying the Locate Us menu");
             Assert.That(WebAssertions.IsWebElementDisplayed(locateUsMenu), Is.True);
             _test.Pass("<div style='color:green; font-weight :bold'> Locate Us menu is displayed successfully </div>", AttachScreenShot(null));
@@ -35,7 +35,7 @@ namespace UIAutomation.Tests
         [Retry(3)]
         public void ClickOnLocateUsMenu()
         {
-            var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find locations");
+            var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find us");
             IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver,locateUsMenu,"Click", null);
             _test.Log(Status.Info, "Clicking on Locate Us menu");
             Assert.That(webDriver.Url.EndsWith("service-centre"), Is.True);
@@ -46,7 +46,7 @@ namespace UIAutomation.Tests
         [Retry(3)]
         public void VerifyLocatorSearchTextBox()
         {
-            var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find locations");
+            var locateUsMenu = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "LinkText", "Find us");
             IdentifyWebElementsPerformAction.PerformWebdriverAction(webDriver, locateUsMenu, "Click", null);
             _test.Log(Status.Info, "Clicking on the Locate us Menu");
             var locatorTextBox = IdentifyWebElementsPerformAction.InitialiseDynamicWebElement(webDriver, "CssSelector", "[name='search-bar']");

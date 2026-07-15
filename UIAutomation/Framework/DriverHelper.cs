@@ -74,7 +74,7 @@ namespace UIAutomation.Framework
             }
             Log.Information("Started {0} WebDriver successfully", driver.GetType().Name);
             driver.Manage().Window.Maximize();
-            driver.Manage().Window.Size = new System.Drawing.Size(1280, 800);
+            driver.Manage().Window.Size = new System.Drawing.Size(1920, 1080);
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(int.Parse(WebDriverConfigurationSettings.ConfigSetting
                     (TestConstants.ConfigTypes.WebDriverConfiguration, TestConstants.ConfigTypesKey.GlobalTimeout)));
             driver.Manage().Timeouts().PageLoad = TimeSpan.FromSeconds(int.Parse(WebDriverConfigurationSettings.ConfigSetting
